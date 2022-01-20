@@ -24,25 +24,26 @@ function App() {
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(({coords: {latitude, longitude} }) => { //your current location
       setCoordinates({ lat : latitude, lng : longitude })
+      // console.info(latitude)
+      // console.info(longitude)
     })
   },[])
   
   useEffect(() => {  // for renewing data or gilter data
     // if(bounds.sw && bounds.ne ){
       setIsLoading(true)
-
-      getWeatherData(coordinates.lat, coordinates.lng)
-      .then((data) => setWeatherData(data))
       
-
-      getPlacesData(type)  /// bounds.sw, bounds.ne as parameter to api index
+      getPlacesData(type, coordinates)  /// bounds.sw, bounds.ne as parameter to api index
       .then((data) => {
         setPlaces(data.filter((place) => place.name && place.num_reviews > 0 ))
         setFilteredPlaces([])
         setIsLoading(false)
+        
+        getWeatherData(coordinates.lat, coordinates.lng)
+        .then((data) => setWeatherData(data))
+      })
       // }
-    })
-  },[type, bounds])
+  },[type,coordinates, bounds]) // remove coords if using bounds
 
   useEffect(() => { 
     const filteredPlaces = places.filter((place) => place.rating > rating)
